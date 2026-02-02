@@ -10,15 +10,15 @@
 // @require      https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js
 // ==/UserScript==
 
-(function() {
+(function () {
     'use strict';
 
     // --- Configuration & State ---
     const STORAGE_KEY = 'htb_tracker_host_id';
     const DEFAULT_HOST_ID = 'htb-dashboard-listener-12345';
-    
+
     let HOST_PEER_ID = localStorage.getItem(STORAGE_KEY) || DEFAULT_HOST_ID;
-    
+
     const CONFIG = {
         UPDATE_INTERVAL_MS: 3000,
         DEBUG: true
@@ -57,7 +57,7 @@
             box-shadow: 0 0 10px rgba(0,0,0,0.5);
             transition: all 0.2s;
         `;
-        
+
         btn.onmouseover = () => btn.style.transform = 'scale(1.05)';
         btn.onmouseout = () => btn.style.transform = 'scale(1)';
         btn.onclick = showSettingsModal;
@@ -68,22 +68,22 @@
 
     function showSettingsModal() {
         const currentId = localStorage.getItem(STORAGE_KEY) || DEFAULT_HOST_ID;
-        
+
         // Simple prompt for now, can be upgraded to a modal logic if needed
         const newId = prompt('Enter Dashboard Host ID:', currentId);
-        
+
         if (newId !== null && newId.trim() !== '') {
             if (newId.trim() !== currentId) {
                 localStorage.setItem(STORAGE_KEY, newId.trim());
                 HOST_PEER_ID = newId.trim();
                 alert('Host ID saved! Reloading connection...');
                 // Re-init connection
-               if (peer) {
-                   peer.destroy();
-                   peer = null;
-                   conn = null;
-               }
-               initPeer();
+                if (peer) {
+                    peer.destroy();
+                    peer = null;
+                    conn = null;
+                }
+                initPeer();
             }
         }
     }
@@ -96,7 +96,7 @@
 
         const myId = 'htb-user-' + Math.floor(Math.random() * 100000);
         log(`Initializing PeerJS with ID: ${myId}`);
-        
+
         peer = new Peer(myId, { debug: 1 });
 
         peer.on('open', (id) => {
@@ -122,9 +122,9 @@
             log(`PeerJS Error: ${err.type}`);
             // For fatal errors, destroy and restart
             if (['browser-incompatible', 'invalid-id', 'unavailable-id', 'ssl-unavailable', 'network', 'webrtc'].includes(err.type)) {
-                 log('Fatal error detected. Restarting peer service in 5s...');
-                 if (peer) peer.destroy(); // Ensure it's dead
-                 setTimeout(initPeer, 5000);
+                log('Fatal error detected. Restarting peer service in 5s...');
+                if (peer) peer.destroy(); // Ensure it's dead
+                setTimeout(initPeer, 5000);
             }
         });
     }
@@ -170,10 +170,10 @@
         conn.on('open', () => {
             log('Connected to Dashboard Host!');
             if (connectionTimeout) clearTimeout(connectionTimeout);
-            
+
             // CRITICAL FIX: Reset the report hash on new connection.
-            lastReportHash = ''; 
-            
+            lastReportHash = '';
+
             scrapeAndSend();
         });
 
@@ -201,12 +201,12 @@
             document.querySelector('.htb-tooltip-container.htb-menu--non-focusable-trigger .htb-body-md.htb-font-medium.htb-text-primary'),
             document.querySelector('[data-testid="navbar-user-menu"] span')
         ];
-        
+
         for (const el of userElVals) {
-             if (el) { username = el.innerText.trim(); break; }
+            if (el) { username = el.innerText.trim(); break; }
         }
 
-        const machineEl = document.querySelector('h1.htb-text-primary'); 
+        const machineEl = document.querySelector('.htb-text-primary.htb-font-medium.avatar-icon-name-details__name.htb-heading-lg.htb-font-bold');
         const machineName = machineEl ? machineEl.innerText.trim() : 'Unknown Machine';
 
         const taskListContainer = document.querySelector('.flag-submission-list');
@@ -235,7 +235,7 @@
                 const color = style.color || style.fill;
                 if (color.includes('178, 242, 51') || color.includes('#b2f233')) isSolved = true;
             }
-            if(li.classList.contains('is-solved') || li.innerHTML.includes('text-success')) isSolved = true;
+            if (li.classList.contains('is-solved') || li.innerHTML.includes('text-success')) isSolved = true;
 
             if (isSolved) {
                 completedTasks++;
